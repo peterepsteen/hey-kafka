@@ -68,23 +68,19 @@ func New(kafkaAddress string, opts ...Opt) (*AvroProducer, error) {
 func (p *AvroProducer) Produce(topic string, schema, message []byte) {
 	codec, err := goavro.NewCodec(string(schema))
 	if err != nil {
-		p.errors <- fmt.Errorf(`
-could not marshal schema. Error: %s
-	Schema: %s`, err.Error(), string(message))
+		p.errors <- fmt.Errorf("could not marshal schema: %s", err.Error())
 		return
 	}
 
 	native, _, err := codec.NativeFromTextual(message)
 	if err != nil {
-		p.errors <- fmt.Errorf(`
-could not marshal message. Error: %s
-	Message: %s`, err.Error(), string(message))
+		p.errors <- fmt.Errorf("could not marshal message: %s", err.Error())
 		return
 	}
 
 	binary, err := codec.BinaryFromNative(nil, native)
 	if err != nil {
-		p.errors <- err
+		p.errors <- fmt.Errorf("could not create binary avro from native struct: %s", err.Error())
 		return
 	}
 

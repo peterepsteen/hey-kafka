@@ -15,8 +15,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-//TODO:fix tests
-
 var schemaRegistry *SchemaRegistry
 
 func init() {
@@ -26,7 +24,7 @@ func init() {
 	viper.SetDefault("schema-host", "http://localhost:8081")
 
 	var err error
-	schemaRegistry, err = New(viper.GetString("schema-host"), http.Client{})
+	schemaRegistry, err = New(viper.GetString("schema-host"), &http.Client{})
 	if err != nil {
 		panic(err)
 	}
@@ -54,7 +52,7 @@ func TestCreateSubject(t *testing.T) {
 		panic(err)
 	}
 
-	subject := fmt.Sprintf("test-UserCreated-%d", time.Now().Unix())
+	subject := fmt.Sprintf("test-usercreated-%d", time.Now().Unix())
 	id, err := schemaRegistry.RegisterSchema(codec, subject)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, id)

@@ -44,12 +44,12 @@ func Run(conf *Config) (err error) {
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	go func() {
+		defer wg.Done()
 		select {
 		case s := <-producer.Successes():
 			log.Printf(successTemplateString, s.Topic, s.Offset)
 		case err = <-producer.Errors():
 		}
-		wg.Done()
 	}()
 
 	schema := getSchema(conf)
